@@ -1,3 +1,4 @@
+from sklearn.naive_bayes import BernoulliNB, random
 from sklearn.metrics import classification_report
 import re, time
 from nltk.corpus import stopwords, wordnet
@@ -114,6 +115,7 @@ vocab = vectorizer.get_feature_names()
 dist=list(np.array(features_train.sum(axis=0)).reshape(-1,))
 for tag, count in sorted(zip(vocab, dist),key = lambda k: k[1]):
     print count, tag
+
 ## Pregunta e
 def score_the_model(model,x,y,xt,yt,text):
     acc_tr = model.score(x,y)
@@ -122,3 +124,15 @@ def score_the_model(model,x,y,xt,yt,text):
     print "Test Accuracy %s: %f"%(text,acc_test)
     print "Detailed Analysis Testing Results ..."
     print(classification_report(yt, model.predict(xt), target_names=['+','-']))
+
+## Pregunta h
+def do_NAIVE_BAYES(x,y,xt,yt):
+    model = BernoulliNB()
+    model = model.fit(x, y)
+    score_the_model(model,x,y,xt,yt,"BernoulliNB")
+    return model
+model=do_NAIVE_BAYES(features_train,labels_train,features_test,labels_test)
+test_pred = model.predict_proba(features_test)
+spl = random.sample(xrange(len(test_pred)), 15)
+for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
+    print sentiment, text
