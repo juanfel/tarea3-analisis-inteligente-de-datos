@@ -9,7 +9,7 @@ import urllib
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
-
+from sklearn.linear_model import LogisticRegression
 #pregunta a)
 # train_data_url = "http://www.inf.utfsm.cl/~jnancu/stanford-subset/polarity.train"
 # test_data_url = "http://www.inf.utfsm.cl/~jnancu/stanford-subset/polarity.dev"
@@ -171,3 +171,22 @@ test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, True)
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, False)
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, True)
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, False)
+
+## Pregunta h
+def do_LOGITS():
+    #Crea varias funciones do_LOGIT para cada valor de c
+    #Es necesario hacer esto para no reescribir codigo
+    #Usa closures y es una funcion generadora
+    start_t = time.time()
+    Cs = [0.01,0.1,10,100,1000]
+    for C in Cs:
+        def do_LOGIT(x,y,xt,yt):
+            print "Usando C= %f"%C
+            model = LogisticRegression(penalty='l2',C=C)
+            model = model.fit(x, y)
+            score_the_model(model,x,y,xt,yt,"LOGISTIC")
+            return model
+        yield do_LOGIT
+logit_generator = do_LOGITS()
+for do_LOGIT in logit_generator:
+    test_Model(train_df,test_df,do_LOGIT, word_extractor2, True)
