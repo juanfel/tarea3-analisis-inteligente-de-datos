@@ -4,6 +4,9 @@ from nltk import WordNetLemmatizer, word_tokenize, pos_tag
 from nltk.stem.porter import PorterStemmer
 import urllib
 import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+
 #pregunta a)
 # train_data_url = "http://www.inf.utfsm.cl/~jnancu/stanford-subset/polarity.train"
 # test_data_url = "http://www.inf.utfsm.cl/~jnancu/stanford-subset/polarity.dev"
@@ -28,11 +31,12 @@ print train_positives.shape[0], train_negatives_num
 print test_positives.shape[0], test_negatives_num
 
 ##Pregunta b
-def word_extractor(text):
+def word_extractor(text, debug = False):
     wordstemmizer = PorterStemmer()
     commonwords = stopwords.words('english')
     text = re.sub(r'([a-z])\1+', r'\1\1',text)#substitute multiple letter by two
-    print text
+    if debug:
+        print text
     words = ""
     wordtokens = [ wordstemmizer.stem(word.lower()) \
                    for word in word_tokenize(text.decode('utf-8', 'ignore')) ]
@@ -68,13 +72,15 @@ def get_wordnet_pos(treebank_tag):
         return wordnet.NOUN #Es el default para wordnet tambien
 ## Es necesario saber que a parte de la oracion corresponde cada palabra
 ## por eso se usa el pos_tag
-def word_extractor2(text):
+def word_extractor2(text, debug = False):
     wordlemmatizer = WordNetLemmatizer()
     commonwords = stopwords.words('english')
     text = re.sub(r'([a-z])\1+', r'\1\1',text)#substitute multiple letter by two
-    print text
     words = ""
     tagged_words = pos_tag(word_tokenize(text.decode('utf-8', 'ignore')))
+    if debug:
+        print text
+        print tagged_words
     wordtokens = [ wordlemmatizer.lemmatize(word.lower(),pos = get_wordnet_pos(tag)) \
                    for word,tag in tagged_words ]
     for word in wordtokens:
@@ -93,3 +99,17 @@ print word_extractor2("I dislike to eat meat")
 print word_extractor2("I disliked to eat meat")
 print word_extractor2("I absolutely hate to eat cake")
 print word_extractor2("I never liked to use stemming")
+
+## Pregunta 3
+texts_train = [word_extractor2(text) for text in train_df.Text]
+texts_test = [word_extractor2(text) for text in test_df.Text]
+vectorizer = CountVectorizer(ngram_range=(1, 1), binary='False')
+vectorizer.fit(np.asarray(texts_train))
+features_train = vectorizer.transform(texts_train)
+features_test = vectorizer.transform(texts_test)
+labels_train = np.asarray((train_df.Sentiment.astype(float)+1)/2.0)
+labels_test = np.asarray((test_df.Sentiment.astype(float)+1)/2.0)
+vocab = vectorizer.get_feature_names()
+dist=list(np.array(features_train.sum(axis=0)).reshape(-1,))
+for tag, count in sorted(zip(vocab, dist),key = lambda k: k[1]):
+    print count, tag
