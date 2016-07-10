@@ -109,15 +109,21 @@ print word_extractor2("I absolutely hate to eat cake")
 print word_extractor2("I never liked to use stemming")
 
 ## Pregunta d
-texts_train = [word_extractor2(text) for text in train_df.Text]
-texts_test = [word_extractor2(text) for text in test_df.Text]
-vectorizer = CountVectorizer(ngram_range=(1, 1), binary='False')
-vectorizer.fit(np.asarray(texts_train))
-features_train = vectorizer.transform(texts_train)
-features_test = vectorizer.transform(texts_test)
-labels_train = np.asarray((train_df.Sentiment.astype(float)+1)/2.0)
-labels_test = np.asarray((test_df.Sentiment.astype(float)+1)/2.0)
-vocab = vectorizer.get_feature_names()
+def generate_features(train_df,test_df,extractor = word_extractor2, useWordstops = True):
+    #Permite generar features en base a los datos iniciales, y permite especificar
+    #parametros tales como el extractor o si usar wordstops
+    texts_train = [extractor(text, useWordstops) for text in train_df.Text]
+    texts_test = [extractor(text, useWordstops) for text in test_df.Text]
+    vectorizer = CountVectorizer(ngram_range=(1, 1), binary='False')
+    vectorizer.fit(np.asarray(texts_train))
+    features_train = vectorizer.transform(texts_train)
+    features_test = vectorizer.transform(texts_test)
+    labels_train = np.asarray((train_df.Sentiment.astype(float)+1)/2.0)
+    labels_test = np.asarray((test_df.Sentiment.astype(float)+1)/2.0)
+    vocab = vectorizer.get_feature_names()
+    return features_train, features_test, labels_train, labels_test, vocab
+
+features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df)
 dist=list(np.array(features_train.sum(axis=0)).reshape(-1,))
 for tag, count in sorted(zip(vocab, dist),key = lambda k: k[1]):
     print count, tag
