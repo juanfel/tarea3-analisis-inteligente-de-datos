@@ -1,3 +1,4 @@
+from sklearn.metrics import classification_report
 import re, time
 from nltk.corpus import stopwords, wordnet
 from nltk import WordNetLemmatizer, word_tokenize, pos_tag
@@ -100,7 +101,7 @@ print word_extractor2("I disliked to eat meat")
 print word_extractor2("I absolutely hate to eat cake")
 print word_extractor2("I never liked to use stemming")
 
-## Pregunta 3
+## Pregunta d
 texts_train = [word_extractor2(text) for text in train_df.Text]
 texts_test = [word_extractor2(text) for text in test_df.Text]
 vectorizer = CountVectorizer(ngram_range=(1, 1), binary='False')
@@ -113,3 +114,11 @@ vocab = vectorizer.get_feature_names()
 dist=list(np.array(features_train.sum(axis=0)).reshape(-1,))
 for tag, count in sorted(zip(vocab, dist),key = lambda k: k[1]):
     print count, tag
+## Pregunta e
+def score_the_model(model,x,y,xt,yt,text):
+    acc_tr = model.score(x,y)
+    acc_test = model.score(xt[:-1],yt[:-1])
+    print "Training Accuracy %s: %f"%(text,acc_tr)
+    print "Test Accuracy %s: %f"%(text,acc_test)
+    print "Detailed Analysis Testing Results ..."
+    print(classification_report(yt, model.predict(xt), target_names=['+','-']))
