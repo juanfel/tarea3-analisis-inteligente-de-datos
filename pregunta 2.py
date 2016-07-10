@@ -1,3 +1,7 @@
+import re, time
+from nltk.corpus import stopwords
+from nltk import WordNetLemmatizer, word_tokenize
+from nltk.stem.porter import PorterStemmer
 import urllib
 import pandas as pd
 #pregunta a)
@@ -22,3 +26,21 @@ test_negatives_num = test_df.shape[0] - test_positives.shape[0]
 
 print train_positives.shape[0], train_negatives_num
 print test_positives.shape[0], test_negatives_num
+
+##Pregunta b
+def word_extractor(text):
+    wordstemmizer = PorterStemmer()
+    commonwords = stopwords.words('english')
+    text = re.sub(r'([a-z])\1+', r'\1\1',text)#substitute multiple letter by two
+    words = ""
+    wordtokens = [ wordstemmizer.stem_word(word.lower()) \
+                   for word in word_tokenize(text.decode('utf-8', 'ignore')) ]
+    for word in wordtokens:
+        if word not in commonwords:
+            words+=" "+word
+    return words
+word_extractor("I love to eat cake")
+word_extractor("I love eating cake")
+word_extractor("I loved eating the cake")
+word_extractor("I do not love eating cake")
+word_extractor("I don't love eating cake")
