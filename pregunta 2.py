@@ -1,4 +1,4 @@
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 import random
 from sklearn.metrics import classification_report
 import re, time
@@ -138,7 +138,7 @@ def score_the_model(model,x,y,xt,yt,text):
     print "Detailed Analysis Testing Results ..."
     print(classification_report(yt, model.predict(xt), target_names=['+','-']))
 
-## Pregunta h
+## Pregunta f
 def do_NAIVE_BAYES(x,y,xt,yt):
     model = BernoulliNB()
     model = model.fit(x, y)
@@ -160,3 +160,14 @@ test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
 
+## Pregunta g
+def do_MULTINOMIAL(x,y,xt,yt):
+    model = MultinomialNB()
+    model = model.fit(x, y)
+    score_the_model(model,x,y,xt,yt,"MULTINOMIAL")
+    return model
+
+test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, True)
+test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, False)
+test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, True)
+test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, False)
