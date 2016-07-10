@@ -48,6 +48,7 @@ print word_extractor("I do not love eating cake")
 print word_extractor("I don't love eating cake") #En resultados aparece n't
 print word_extractor("I like drinking soda")
 print word_extractor("I dislike to eat meat")
+print word_extractor("I disliked to eat meat")
 print word_extractor("I absolutely hate to eat cake")
 print word_extractor("I never liked to use stemming")
 
@@ -89,5 +90,6 @@ print word_extractor2("I do not love eating cake")
 print word_extractor2("I don't love eating cake") #En resultados aparece n't
 print word_extractor2("I like drinking soda")
 print word_extractor2("I dislike to eat meat")
+print word_extractor2("I disliked to eat meat")
 print word_extractor2("I absolutely hate to eat cake")
 print word_extractor2("I never liked to use stemming")
