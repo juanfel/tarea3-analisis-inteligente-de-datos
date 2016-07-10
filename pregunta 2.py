@@ -1,4 +1,5 @@
-from sklearn.naive_bayes import BernoulliNB, random
+from sklearn.naive_bayes import BernoulliNB
+import random
 from sklearn.metrics import classification_report
 import re, time
 from nltk.corpus import stopwords, wordnet
@@ -152,3 +153,10 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
     spl = random.sample(xrange(len(test_pred)), 15)
     for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
         print sentiment, text
+
+# Casos de prueba
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
+
