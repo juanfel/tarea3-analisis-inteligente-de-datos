@@ -33,9 +33,12 @@ print train_positives.shape[0], train_negatives_num
 print test_positives.shape[0], test_negatives_num
 
 ##Pregunta b
-def word_extractor(text, debug = False):
+def word_extractor(text, useStopwords = True, debug = False):
     wordstemmizer = PorterStemmer()
-    commonwords = stopwords.words('english')
+    if useStopwords:
+        commonwords = stopwords.words('english')
+    else:
+        commonwords = []
     text = re.sub(r'([a-z])\1+', r'\1\1',text)#substitute multiple letter by two
     if debug:
         print text
@@ -74,9 +77,12 @@ def get_wordnet_pos(treebank_tag):
         return wordnet.NOUN #Es el default para wordnet tambien
 ## Es necesario saber que a parte de la oracion corresponde cada palabra
 ## por eso se usa el pos_tag
-def word_extractor2(text, debug = False):
+def word_extractor2(text, useStopwords = True, debug = False):
     wordlemmatizer = WordNetLemmatizer()
-    commonwords = stopwords.words('english')
+    if useStopwords:
+        commonwords = stopwords.words('english')
+    else:
+        commonwords = []
     text = re.sub(r'([a-z])\1+', r'\1\1',text)#substitute multiple letter by two
     words = ""
     tagged_words = pos_tag(word_tokenize(text.decode('utf-8', 'ignore')))
