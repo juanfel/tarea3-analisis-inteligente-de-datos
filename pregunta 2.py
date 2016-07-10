@@ -143,8 +143,12 @@ def do_NAIVE_BAYES(x,y,xt,yt):
     model = model.fit(x, y)
     score_the_model(model,x,y,xt,yt,"BernoulliNB")
     return model
-model=do_NAIVE_BAYES(features_train,labels_train,features_test,labels_test)
-test_pred = model.predict_proba(features_test)
-spl = random.sample(xrange(len(test_pred)), 15)
-for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
-    print sentiment, text
+
+def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True):
+    #Prueba el modelo usando una muestra aleatoria
+    features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df,extract_function,useStopwords)
+    model=model_function(features_train,labels_train,features_test,labels_test)
+    test_pred = model.predict_proba(features_test)
+    spl = random.sample(xrange(len(test_pred)), 15)
+    for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
+        print sentiment, text
