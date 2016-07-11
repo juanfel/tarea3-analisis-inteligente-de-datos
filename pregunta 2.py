@@ -146,7 +146,7 @@ def do_NAIVE_BAYES(x,y,xt,yt):
     score_the_model(model,x,y,xt,yt,"BernoulliNB")
     return model
 
-def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False, useProbabilities = True):
+def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False, useProbabilities = True, usePredictionValue = True):
     #Prueba el modelo usando una muestra aleatoria
     #Si multipleModels = true, asume que la funcion va a entregar un iterable
     #con funciones
@@ -160,12 +160,21 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
 
     for mod_fun in model_functions:
         model = mod_fun(features_train,labels_train,features_test,labels_test)
+        sample_size = features_test.shape[0]
+        spl = random.sample(xrange(sample_size), 15)
         if useProbabilities:
-            test_pred = model.predict_proba(features_test)
-            spl = random.sample(xrange(len(test_pred)), 15)
-            for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
-                print sentiment, text
-
+            test_prob = model.predict_proba(features_test)
+            if not usePredictionValue:
+                for text, sentiment in zip(test_df.Text[spl], test_prob[spl]):
+                    print sentiment, text
+        if usePredictionValue:
+            test_pred = model.predict(features_test)
+            if useProbabilities:
+                for text, prob, sentiment in zip(test_df.Text[spl], test_prob[spl], test_pred[spl]):
+                   print sentiment, prob, text 
+            else:
+                for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
+                    print sentiment, text
 # Casos de prueba
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
