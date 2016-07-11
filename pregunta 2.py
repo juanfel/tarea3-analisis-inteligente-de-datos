@@ -1,3 +1,4 @@
+from sklearn.svm import SVC
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 import random
 from sklearn.metrics import classification_report
@@ -201,3 +202,21 @@ test_Model(train_df,test_df,do_LOGITS, word_extractor2, True,True)
 test_Model(train_df,test_df,do_LOGITS, word_extractor2, False,True)
 test_Model(train_df,test_df,do_LOGITS, word_extractor, True,True)
 test_Model(train_df,test_df,do_LOGITS, word_extractor, False,True)
+
+## Pregunta i
+def do_SVMS():
+    #Crea varias funciones do_SVM para cada valor de c
+    Cs = [0.01,0.1,10,100,1000]
+    for C in Cs:
+        def do_SVM(x,y,xt,yt):
+            print "El valor de C que se esta probando: %f"%C
+            model = SVC(C=C,kernel='linear',probability=True)
+            model = model.fit(x, y)
+            score_the_model(model,x,y,xt,yt,"SVM")
+            return model
+        yield do_SVM
+
+test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True)
+test_Model(train_df,test_df,do_SVMS, word_extractor2, False,True)
+test_Model(train_df,test_df,do_SVMS, word_extractor, True,True)
+test_Model(train_df,test_df,do_SVMS, word_extractor, False,True)
