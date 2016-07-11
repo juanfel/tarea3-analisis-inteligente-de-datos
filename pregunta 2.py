@@ -225,8 +225,11 @@ def do_SVMS():
             score_the_model(model,x,y,xt,yt,"SVM")
             return model
         yield do_SVM
-
-
+#Muy lentos
+test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True,False)
+test_Model(train_df,test_df,do_SVMS, word_extractor2, False,True,False)
+test_Model(train_df,test_df,do_SVMS, word_extractor, True,True,False)
+test_Model(train_df,test_df,do_SVMS, word_extractor, False,True,False)
 def do_Linear_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
     Cs = [0.01,0.1,10,100,1000]
