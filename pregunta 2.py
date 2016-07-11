@@ -1,4 +1,4 @@
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 import random
 from sklearn.metrics import classification_report
@@ -146,7 +146,7 @@ def do_NAIVE_BAYES(x,y,xt,yt):
     score_the_model(model,x,y,xt,yt,"BernoulliNB")
     return model
 
-def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False):
+def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False, useProbabilities = True):
     #Prueba el modelo usando una muestra aleatoria
     #Si multipleModels = true, asume que la funcion va a entregar un iterable
     #con funciones
@@ -160,10 +160,11 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
 
     for mod_fun in model_functions:
         model = mod_fun(features_train,labels_train,features_test,labels_test)
-        test_pred = model.predict_proba(features_test)
-        spl = random.sample(xrange(len(test_pred)), 15)
-        for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
-            print sentiment, text
+        if useProbabilities:
+            test_pred = model.predict_proba(features_test)
+            spl = random.sample(xrange(len(test_pred)), 15)
+            for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
+                print sentiment, text
 
 # Casos de prueba
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
@@ -216,7 +217,20 @@ def do_SVMS():
             return model
         yield do_SVM
 
-test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True)
-test_Model(train_df,test_df,do_SVMS, word_extractor2, False,True)
-test_Model(train_df,test_df,do_SVMS, word_extractor, True,True)
-test_Model(train_df,test_df,do_SVMS, word_extractor, False,True)
+
+def do_Linear_SVMS():
+    #Crea varias funciones do_SVM para cada valor de c
+    Cs = [0.01,0.1,10,100,1000]
+    for C in Cs:
+        def do_SVM(x,y,xt,yt):
+            print "El valor de C que se esta probando: %f"%C
+            model = LinearSVC(C=C)
+            model = model.fit(x, y)
+            score_the_model(model,x,y,xt,yt,"SVM")
+            return model
+        yield do_SVM
+
+test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, True,True,False)
+test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, False,True,False)
+test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, True,True,False)
+test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, False,True,False)
