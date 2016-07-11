@@ -145,14 +145,24 @@ def do_NAIVE_BAYES(x,y,xt,yt):
     score_the_model(model,x,y,xt,yt,"BernoulliNB")
     return model
 
-def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True):
+def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False):
     #Prueba el modelo usando una muestra aleatoria
+    #Si multipleModels = true, asume que la funcion va a entregar un iterable
+    #con funciones
+    #Se hace asi para que salgan resultados ordenados
     features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df,extract_function,useStopwords)
-    model=model_function(features_train,labels_train,features_test,labels_test)
-    test_pred = model.predict_proba(features_test)
-    spl = random.sample(xrange(len(test_pred)), 15)
-    for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
-        print sentiment, text
+
+    if multipleModels:
+        model_functions = model_function()
+    else:
+        model_functions = [model_function]
+
+    for mod_fun in model_functions:
+        model = mod_fun(features_train,labels_train,features_test,labels_test)
+        test_pred = model.predict_proba(features_test)
+        spl = random.sample(xrange(len(test_pred)), 15)
+        for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
+            print sentiment, text
 
 # Casos de prueba
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
@@ -187,6 +197,7 @@ def do_LOGITS():
             score_the_model(model,x,y,xt,yt,"LOGISTIC")
             return model
         yield do_LOGIT
-logit_generator = do_LOGITS()
-for do_LOGIT in logit_generator:
-    test_Model(train_df,test_df,do_LOGIT, word_extractor2, True)
+test_Model(train_df,test_df,do_LOGITS, word_extractor2, True,True)
+test_Model(train_df,test_df,do_LOGITS, word_extractor2, False,True)
+test_Model(train_df,test_df,do_LOGITS, word_extractor, True,True)
+test_Model(train_df,test_df,do_LOGITS, word_extractor, False,True)
