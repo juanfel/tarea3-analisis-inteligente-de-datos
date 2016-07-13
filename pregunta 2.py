@@ -209,10 +209,11 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
     else:
         return return_values[0]
 # Casos de prueba
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, True)
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, False)
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
+naive_values = []
+naive_values.append(test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True))
+naive_values.append(test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, False))
+naive_values.append(test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, True))
+naive_values.append(test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False))
 
 ## Pregunta g
 def do_MULTINOMIAL(x,y,xt,yt):
@@ -220,10 +221,11 @@ def do_MULTINOMIAL(x,y,xt,yt):
     model = model.fit(x, y)
     f1 = score_the_model(model,x,y,xt,yt,"MULTINOMIAL")
     return model, f1
-test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, True)
-test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, False)
-test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, True)
-test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, False)
+multinomial_values = []
+multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, True))
+multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, False))
+multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, True))
+multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, False))
 
 ## Pregunta h
 def do_LOGITS():
@@ -240,11 +242,13 @@ def do_LOGITS():
             f1 = score_the_model(model,x,y,xt,yt,"LOGISTIC")
             return model, f1
         yield do_LOGIT
-test_Model(train_df,test_df,do_LOGITS, word_extractor2, True,True)
-test_Model(train_df,test_df,do_LOGITS, word_extractor2, False,True)
-test_Model(train_df,test_df,do_LOGITS, word_extractor, True,True)
-test_Model(train_df,test_df,do_LOGITS, word_extractor, False,True)
+logit_values = []
+logit_values.append(test_Model(train_df,test_df,do_LOGITS, word_extractor2, True,True))
+logit_values.append(test_Model(train_df,test_df,do_LOGITS, word_extractor2, False,True))
+logit_values.append(test_Model(train_df,test_df,do_LOGITS, word_extractor, True,True))
+logit_values.append(test_Model(train_df,test_df,do_LOGITS, word_extractor, False,True))
 
+logit_f1_max = max([(max(a), a.index(max(a))) for a in logit_values])
 ## Pregunta i
 def do_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
@@ -257,11 +261,11 @@ def do_SVMS():
             f1 = score_the_model(model,x,y,xt,yt,"SVM")
             return model, f1
         yield do_SVM
-#Muy lentos
-test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True,False)
-test_Model(train_df,test_df,do_SVMS, word_extractor2, False,True,False)
-test_Model(train_df,test_df,do_SVMS, word_extractor, True,True,False)
-test_Model(train_df,test_df,do_SVMS, word_extractor, False,True,False)
+# #Muy lentos no usar
+# test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True,False)
+# test_Model(train_df,test_df,do_SVMS, word_extractor2, False,True,False)
+# test_Model(train_df,test_df,do_SVMS, word_extractor, True,True,False)
+# test_Model(train_df,test_df,do_SVMS, word_extractor, False,True,False)
 def do_Linear_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
     Cs = [0.01,0.05,0.1,0.5,1,10,100,1000]
@@ -270,11 +274,13 @@ def do_Linear_SVMS():
             print "El valor de C que se esta probando: %f"%C
             model = LinearSVC(C=C)
             model = model.fit(x, y)
-            score_the_model(model,x,y,xt,yt,"SVM")
-            return model
+            f1 = score_the_model(model,x,y,xt,yt,"SVM")
+            return model,f1
         yield do_SVM
+svm_values = []
+svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, True,True,False))
+svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, False,True,False))
+svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, True,True,False))
+svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, False,True,False))
 
-test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, True,True,False)
-test_Model(train_df,test_df,do_Linear_SVMS, word_extractor2, False,True,False)
-test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, True,True,False)
-test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, False,True,False)
+svm_f1_max = max([(max(a), a.index(max(a))) for a in svm_values])
