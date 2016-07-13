@@ -1,7 +1,7 @@
 from sklearn.svm import SVC, LinearSVC
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 import random
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, f1_score
 import re, time
 from nltk.corpus import stopwords, wordnet
 from nltk import WordNetLemmatizer, word_tokenize, pos_tag
@@ -159,20 +159,23 @@ def score_the_model(model,x,y,xt,yt,text):
     print "Training Accuracy %s: %f"%(text,acc_tr)
     print "Test Accuracy %s: %f"%(text,acc_test)
     print "Detailed Analysis Testing Results ..."
-    print(classification_report(yt, model.predict(xt), target_names=['+','-']))
+    prediction = model.predict(xt)
+    print(classification_report(yt, prediction, target_names=['+','-']))
+    return f1_score(yt, prediction )
 
 ## Pregunta f
 def do_NAIVE_BAYES(x,y,xt,yt):
     model = BernoulliNB()
     model = model.fit(x, y)
-    score_the_model(model,x,y,xt,yt,"BernoulliNB")
-    return model
+    f1 = score_the_model(model,x,y,xt,yt,"BernoulliNB")
+    return model, f1
 
 def test_Model(train_df,test_df,model_function,extract_function = word_extractor2, useStopwords = True, multipleModels = False, useProbabilities = True, usePredictionValue = True):
     #Prueba el modelo usando una muestra aleatoria
     #Si multipleModels = true, asume que la funcion va a entregar un iterable
     #con funciones
     #Se hace asi para que salgan resultados ordenados
+    #Retorna el o los valores de f1_score de los modelos
     features_train, features_test, labels_train, labels_test, vocab = get_features(extract_function,useStopwords)
     print "Function name %s"%extract_function.__name__
     print "Use stopwords %s"%useStopwords
@@ -181,8 +184,10 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
     else:
         model_functions = [model_function]
 
+    return_values = []
+
     for mod_fun in model_functions:
-        model = mod_fun(features_train,labels_train,features_test,labels_test)
+        model, f1 = mod_fun(features_train,labels_train,features_test,labels_test)
         sample_size = features_test.shape[0]
         spl = random.sample(xrange(sample_size), 15)
         if useProbabilities == True:
@@ -198,6 +203,11 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
             else:
                 for text, sentiment in zip(test_df.Text[spl], test_pred[spl]):
                     print sentiment, text
+        return_values.append(f1)
+    if multipleModels:
+        return return_values
+    else:
+        return return_values[0]
 # Casos de prueba
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, True)
@@ -208,9 +218,8 @@ test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
 def do_MULTINOMIAL(x,y,xt,yt):
     model = MultinomialNB()
     model = model.fit(x, y)
-    score_the_model(model,x,y,xt,yt,"MULTINOMIAL")
-    return model
-
+    f1 = score_the_model(model,x,y,xt,yt,"MULTINOMIAL")
+    return model, f1
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, True)
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor2, False)
 test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, True)
@@ -228,8 +237,8 @@ def do_LOGITS():
             print "Usando C= %f"%C
             model = LogisticRegression(penalty='l2',C=C)
             model = model.fit(x, y)
-            score_the_model(model,x,y,xt,yt,"LOGISTIC")
-            return model
+            f1 = score_the_model(model,x,y,xt,yt,"LOGISTIC")
+            return model, f1
         yield do_LOGIT
 test_Model(train_df,test_df,do_LOGITS, word_extractor2, True,True)
 test_Model(train_df,test_df,do_LOGITS, word_extractor2, False,True)
@@ -245,8 +254,8 @@ def do_SVMS():
             print "El valor de C que se esta probando: %f"%C
             model = SVC(C=C,kernel='linear',probability=True)
             model = model.fit(x, y)
-            score_the_model(model,x,y,xt,yt,"SVM")
-            return model
+            f1 = score_the_model(model,x,y,xt,yt,"SVM")
+            return model, f1
         yield do_SVM
 #Muy lentos
 test_Model(train_df,test_df,do_SVMS, word_extractor2, True,True,False)
