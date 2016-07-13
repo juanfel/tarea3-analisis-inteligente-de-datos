@@ -123,13 +123,35 @@ def generate_features(train_df,test_df,extractor = word_extractor2, useWordstops
     labels_train = np.asarray((train_df.Sentiment.astype(float)+1)/2.0)
     labels_test = np.asarray((test_df.Sentiment.astype(float)+1)/2.0)
     vocab = vectorizer.get_feature_names()
+    print "Features listas"
     return features_train, features_test, labels_train, labels_test, vocab
 
-features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df)
+
+## Crea features para cada combinacion de extractor-wordstop
+## Esto es porque este calculo es de los mas lentos, por lo cual no conviene
+## hacerlo cada vez que se quiera correr un test.
+we2_features_wordstop = generate_features(train_df,test_df)
+we2_features_non_wordstop = generate_features(train_df,test_df,word_extractor2,False)
+we_features_wordstop = generate_features(train_df,test_df,word_extractor,True)
+we_features_non_wordstop = generate_features(train_df,test_df,word_extractor,False)
+def get_features(extractor,useWordstops):
+    #Obtiene el vector de features de acuerdo a los parametros de arriba
+    #Nada elegante.
+    if extractor.__name__ == "word_extractor2":
+        if useWordstops:
+            return we2_features_wordstop
+        else:
+            return we2_features_non_wordstop
+    else:
+        if useWordstops:
+            return we_features_wordstop
+        else:
+            return we_features_non_wordstop
+
+features_train, features_test, labels_train, labels_test, vocab = get_features(word_extractor2,True)
 dist=list(np.array(features_train.sum(axis=0)).reshape(-1,))
 for tag, count in sorted(zip(vocab, dist),key = lambda k: k[1]):
     print count, tag
-
 ## Pregunta e
 def score_the_model(model,x,y,xt,yt,text):
     acc_tr = model.score(x,y)
@@ -151,7 +173,7 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
     #Si multipleModels = true, asume que la funcion va a entregar un iterable
     #con funciones
     #Se hace asi para que salgan resultados ordenados
-    features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df,extract_function,useStopwords)
+    features_train, features_test, labels_train, labels_test, vocab = get_features(extract_function,useStopwords)
     print "Function name %s"%extract_function.__name__
     print "Use stopwords %s"%useStopwords
     if multipleModels:
