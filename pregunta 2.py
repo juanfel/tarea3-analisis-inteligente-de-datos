@@ -315,7 +315,7 @@ test_naive_df = pd.DataFrame(data = np.array(naive_test_acc).reshape(1,len(naive
 
 sns.pointplot(data=train_naive_df)
 sns.pointplot(data=test_naive_df)
-sns.plt.plot()
+sns.plt.show()
 #f1_scores para multinomial
 
 f1_multinomial_df = pd.DataFrame(data = np.array(multinomial_values).reshape(1,len(multinomial_values)), index = [0], columns = column_names)
