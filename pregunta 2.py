@@ -37,7 +37,7 @@ print test_positives.shape[0], test_negatives_num
 ##Pregunta b
 def word_extractor(text, useStopwords = True, debug = False):
     wordstemmizer = PorterStemmer()
-    if useStopwords:
+    if useStopwords == True:
         commonwords = stopwords.words('english')
     else:
         commonwords = []
@@ -81,7 +81,7 @@ def get_wordnet_pos(treebank_tag):
 ## por eso se usa el pos_tag
 def word_extractor2(text, useStopwords = True, debug = False):
     wordlemmatizer = WordNetLemmatizer()
-    if useStopwords:
+    if useStopwords == True:
         commonwords = stopwords.words('english')
     else:
         commonwords = []
@@ -152,7 +152,8 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
     #con funciones
     #Se hace asi para que salgan resultados ordenados
     features_train, features_test, labels_train, labels_test, vocab = generate_features(train_df,test_df,extract_function,useStopwords)
-
+    print "Function name %s"%extract_function.__name__
+    print "Use stopwords %s"%useStopwords
     if multipleModels:
         model_functions = model_function()
     else:
@@ -162,12 +163,12 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
         model = mod_fun(features_train,labels_train,features_test,labels_test)
         sample_size = features_test.shape[0]
         spl = random.sample(xrange(sample_size), 15)
-        if useProbabilities:
+        if useProbabilities == True:
             test_prob = model.predict_proba(features_test)
             if not usePredictionValue:
                 for text, sentiment in zip(test_df.Text[spl], test_prob[spl]):
                     print sentiment, text
-        if usePredictionValue:
+        if usePredictionValue == True:
             test_pred = model.predict(features_test)
             if useProbabilities:
                 for text, prob, sentiment in zip(test_df.Text[spl], test_prob[spl], test_pred[spl]):
@@ -177,8 +178,8 @@ def test_Model(train_df,test_df,model_function,extract_function = word_extractor
                     print sentiment, text
 # Casos de prueba
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
-test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, True)
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, True)
+test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor2, False)
 test_Model(train_df,test_df,do_NAIVE_BAYES, word_extractor, False)
 
 ## Pregunta g
@@ -232,7 +233,7 @@ test_Model(train_df,test_df,do_SVMS, word_extractor, True,True,False)
 test_Model(train_df,test_df,do_SVMS, word_extractor, False,True,False)
 def do_Linear_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
-    Cs = [0.01,0.1,10,100,1000]
+    Cs = [0.01,0.05,0.1,0.5,1,10,100,1000]
     for C in Cs:
         def do_SVM(x,y,xt,yt):
             print "El valor de C que se esta probando: %f"%C
