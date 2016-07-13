@@ -9,6 +9,7 @@ from nltk.stem.porter import PorterStemmer
 import urllib
 import pandas as pd
 import numpy as np
+import seaborn as sns
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 #pregunta a)
@@ -228,12 +229,13 @@ multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extra
 multinomial_values.append(test_Model(train_df,test_df,do_MULTINOMIAL, word_extractor, False))
 
 ## Pregunta h
+logit_cs = [0.01,0.1,0.9,1,10,100,1000]
 def do_LOGITS():
     #Crea varias funciones do_LOGIT para cada valor de c
     #Es necesario hacer esto para no reescribir codigo
     #Usa closures y es una funcion generadora
     start_t = time.time()
-    Cs = [0.01,0.1,10,100,1000]
+    Cs = logit_cs
     for C in Cs:
         def do_LOGIT(x,y,xt,yt):
             print "Usando C= %f"%C
@@ -250,9 +252,11 @@ logit_values.append(test_Model(train_df,test_df,do_LOGITS, word_extractor, False
 
 logit_f1_max = max([(max(a), a.index(max(a))) for a in logit_values])
 ## Pregunta i
+svm_cs = [0.01,0.04,0.05,0.06,0.1,0.5,1,10,100,1000]
+
 def do_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
-    Cs = [0.01,0.1,10,100,1000]
+    Cs = svm_cs
     for C in Cs:
         def do_SVM(x,y,xt,yt):
             print "El valor de C que se esta probando: %f"%C
@@ -268,7 +272,7 @@ def do_SVMS():
 # test_Model(train_df,test_df,do_SVMS, word_extractor, False,True,False)
 def do_Linear_SVMS():
     #Crea varias funciones do_SVM para cada valor de c
-    Cs = [0.01,0.05,0.1,0.5,1,10,100,1000]
+    Cs = svm_cs
     for C in Cs:
         def do_SVM(x,y,xt,yt):
             print "El valor de C que se esta probando: %f"%C
@@ -284,3 +288,43 @@ svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, Tr
 svm_values.append(test_Model(train_df,test_df,do_Linear_SVMS, word_extractor, False,True,False))
 
 svm_f1_max = max([(max(a), a.index(max(a))) for a in svm_values])
+
+##Pregunta j
+#Maximos f1_scores obtenidos por metodo
+f1_max_scores_df = pd.DataFrame(data = {"Naive Bayes": max(naive_values),
+                                        "MultinomialNB": max(multinomial_values),
+                                        "Logistic Regression": logit_f1_max[0],
+                                        "SVM": svm_f1_max[0]},
+                                index = np.arange(4))
+sns.pointplot(data=f1_max_scores_df)
+sns.plt.show()
+
+#f1_scores para naive bayes
+column_names = ["WE2,t","WE2,f","WE,t","WE,f"]
+f1_naive_df = pd.DataFrame(data = np.array(naive_values).reshape(1,len(naive_values)), index = [0], columns = column_names)
+sns.pointplot(data=f1_naive_df)
+sns.plt.show()
+
+#f1_scores para multinomial
+
+f1_multinomial_df = pd.DataFrame(data = np.array(multinomial_values).reshape(1,len(multinomial_values)), index = [0], columns = column_names)
+sns.pointplot(data=f1_multinomial_df)
+sns.plt.show()
+
+#f1_scores para logistic regression
+
+f1_logit_df = pd.DataFrame(data = np.array(logit_values).T, columns = column_names)
+f1_logit_df["cs"] = logit_cs
+#Seaborn se comporta mejor con dataframes en "long form"
+f1_logit_df_melted = pd.melt(f1_logit_df,id_vars=["cs"], value_vars = column_names)
+sns.pointplot(x = "cs", y = "value", data = f1_logit_df_melted, hue = "variable")
+sns.plt.show()
+
+#f1_scores para linear svm
+
+f1_svm_df = pd.DataFrame(data = np.array(svm_values).T, columns = column_names)
+f1_svm_df["cs"] = svm_cs
+#Seaborn se comporta mejor con dataframes en "long form"
+f1_svm_df_melted = pd.melt(f1_svm_df,id_vars=["cs"], value_vars = column_names)
+sns.pointplot(x = "cs", y = "value", data = f1_svm_df_melted, hue = "variable")
+sns.plt.show()
