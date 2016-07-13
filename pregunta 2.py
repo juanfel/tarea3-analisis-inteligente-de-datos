@@ -315,13 +315,19 @@ test_naive_df = pd.DataFrame(data = np.array(naive_test_acc).reshape(1,len(naive
 
 sns.pointplot(data=train_naive_df)
 sns.pointplot(data=test_naive_df)
-sns.plot
+sns.plt.plot()
 #f1_scores para multinomial
 
 f1_multinomial_df = pd.DataFrame(data = np.array(multinomial_values).reshape(1,len(multinomial_values)), index = [0], columns = column_names)
 sns.pointplot(data=f1_multinomial_df)
 sns.plt.show()
 
+train_multinomial_df = pd.DataFrame(data = np.array(naive_train_acc).reshape(1,len(naive_values)), index = [0], columns = column_names)
+test_multinomial_df = pd.DataFrame(data = np.array(naive_test_acc).reshape(1,len(naive_values)), index = [0], columns = column_names)
+
+sns.pointplot(data=train_multinomial_df)
+sns.pointplot(data=test_multinomial_df)
+sns.plt.show()
 #f1_scores para logistic regression
 
 f1_logit_df = pd.DataFrame(data = np.array(logit_values).T, columns = column_names)
