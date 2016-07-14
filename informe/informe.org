@@ -8,7 +8,88 @@
 #+KEYWORDS:
 #+SUBTITLE:
 #+DATE: \today
+* Reducción de Dimensionalidad para Clasificación
+  La idea del problema es de clasificar las once vocales del inglés británico
+  para poder reconocer éstas vocales independamente de la persona que habla. Los
+  cadidatos dijeron 11 palabras cada uno, que corresponden a las once vocales.
+  Luego, la clasificación será probada con nuevos candidatos.
+  
+  a) En el caso de los datos de entrenamiento, hay 48 registros que corresponden
+     al numero de veces distintas que cada palabra fue registrada. Hay 42
+     registros en el dataset de prueba. Por cada registro, la persona dijo 11
+     palabras que corresponden a las 11 vocales de la idioma.
+  b) Normalizamos los datos para que una de las variables no tenga un mayor peso
+     que las otras solo por tener valores mas grandes en valor absoluto.
+  c) Elección de paleta : *Espectral*
+     
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION:
+     [[file:p1_spectral.PNG]] 
+     Porque es la paleta que tiene la divesidad de colores más grande y por lo
+     tanto es más fácil de ver donde se situan los datos de cada clase.
 
+     En el codigo dado en la tarea mclases tiene 9 elementos, sin embargo el
+     numero de clases es 11 por el numero de vocales.
+
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION: /PCA/.
+     [[file:p1_C_PCA_PLOT.png]] 
+  d) La paleta es la misma que en la pregunta anterior.
+     
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION: /LDA/.
+    [[file:p1_D_LDA_PLOT.png]] 
+  e) Cualitativamente parece que el metodo de reducción de dimensionalidad LDA
+     es más interesante que el PCA ya que las clases son más separadas con LDA,
+     o dicho de otra manera por cada clase los datos son más agrupados usando LDA.
+
+     Podemos verificarlo utilizando el metodo del K-means: se debe calcular la
+     distancia de cada punto con el promedio de los puntos de su clase. El
+     metodo más adecuado es el que minimiza la suma de los cuadros de estas
+     distancias
+  f) Cada palabra es dicha el mismo numero de veces : 48 por los datos de
+     pruebas. Lo que significa que una palabra tiene la misma probabilidad a
+     priori de pertenecer a cada una de las clases : 1/11 ≃ 0.091.
+  g) La tabla siguiente muestra la puntuación de cada modelo sobre los datos de
+     entrenamiento y los datos de prueba.
+
+     #+ATTR_LaTeX: :align |c|c|c|c|
+     |---------------+------+--------+-------------------|
+     | Modelo        |  LDA | QDA    | 10-NeighborsClass |
+     |---------------+------+--------+-------------------|
+     | Entrenamiento | 0.68 | *0.98* | 0.93              |
+     | Prueba        | 0.45 | 0.42   | *0.49*            |
+     |---------------+------+--------+-------------------|
+     
+     El modelo más apropriado para los datos de entrenamiento es QDA con una
+     puntuación de 0.98. El modelo que se comporta lo mejor sobre los datos de
+     prueba es el K-NeighborsClasifier con $$K = 10$$ que nos da una puntuación de
+     0.49.
+      
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION: Score de K-Neighbors.
+     [[file:p1_KNeighbors_score.png]]
+     El score de entrenamiento va bajando cuando K aumenta, aunque el score de
+     prueba se queda entre 0.45 y 0.5. El mejor que podemos obtener es un score
+     de prueba de 0.498 con $$K = 1$$ y $$K = 8$$.
+
+  h) En esta pregunta utilizamos PCA para reducir la dimensionalidad. El mejor
+     modelo es el que minimiza el error de prueba y por lo tanto encontramos que
+     QDA en aplicado al dataset reducido a una dimensión es lo más interesante,
+     con un error de prueba de 0.77.
+     
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION: Errores de entrenamiento LDA, QDA, K-NN usando PCA.
+     [[file:p1_Dim_Error_PCA.png]] 
+  i) Utilizando LDA para reducir la dimensionalidad del dataset, encontramos que
+     el modelo más interesante todavía es QDA, pero esta vez con un error de
+     prueba de 0.78.
+     
+     #+ATTR_LATEX: :width 0.6\textwidth :placement [H]
+     #+CAPTION: Errores de entrenamiento LDA, QDA, K-NN usando LDA.
+     [[file:p1_Dim_Error_LDA.png]] 
+
+     
 * Reconocimiento de Texto
  El problema de ésta parte es reconocer si un comentario de un sitio web de
  películas es favorable o desfavorable.
