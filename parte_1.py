@@ -127,7 +127,7 @@ knn_test_scores = []
 for k in range(1,11):
     sklearn_pca = PCA(n_components=k)
     Xred_pca = sklearn_pca.fit_transform(X_std)
-    Xred_pca_test = sklearn_pca.fit_transform(X_std_test)    
+    Xred_pca_test = sklearn_pca.transform(X_std_test)    
     #LDA
     lda_model = LDA()
     lda_model.fit(Xred_pca,y)
@@ -145,15 +145,15 @@ for k in range(1,11):
     knn_test_scores += [1-knn_model.score(Xred_pca_test,ytest)]
 
 plt.figure(figsize=(12, 8))
-plt.plot(range(1,11), lda_train_scores, label="LDA train score", c = "blue")
-plt.plot(range(1,11), lda_test_scores, label="LDA test score", c = "cyan")
-plt.plot(range(1,11), qda_train_scores, label="QDA train score", c = "yellow")
-plt.plot(range(1,11), qda_test_scores, label="QDA test score", c = "green")
-plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train score", c = "red")
-plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test score", c = "magenta")
+plt.plot(range(1,11), lda_train_scores, label="LDA train error", c = "blue")
+plt.plot(range(1,11), lda_test_scores, label="LDA test error", c = "cyan")
+plt.plot(range(1,11), qda_train_scores, label="QDA train error", c = "yellow")
+plt.plot(range(1,11), qda_test_scores, label="QDA test error", c = "green")
+plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train error", c = "red")
+plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test error", c = "magenta")
 plt.xlabel("Dimension (reduced from PCA)")
 plt.ylabel("Error")
-plt.legend(loc='right', fancybox=True)
+plt.legend(loc='upper right', fancybox=True)
 plt.show()
 
 
@@ -169,7 +169,7 @@ knn_test_scores = []
 for k in range(1,11):
     sklearn_lda = LDA(n_components=k)
     Xred_lda = sklearn_lda.fit_transform(X_std,y)   
-    Xred_lda_test = sklearn_lda.fit_transform(X_std_test,ytest)     
+    Xred_lda_test = sklearn_lda.transform(X_std_test)     
     #LDA
     lda_model = LDA()
     lda_model.fit(Xred_lda,y)
@@ -187,13 +187,13 @@ for k in range(1,11):
     knn_test_scores += [1-knn_model.score(Xred_lda_test,ytest)]
 
 plt.figure(figsize=(12, 8))
-plt.plot(range(1,11), lda_train_scores, label="LDA train score", c = "blue")
-plt.plot(range(1,11), lda_test_scores, label="LDA test score", c = "cyan")
-plt.plot(range(1,11), qda_train_scores, label="QDA train score", c = "yellow")
-plt.plot(range(1,11), qda_test_scores, label="QDA test score", c = "green")
-plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train score", c = "red")
-plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test score", c = "magenta")
+plt.plot(range(1,11), lda_train_scores, label="LDA train error", c = "blue")
+plt.plot(range(1,11), lda_test_scores, label="LDA test error", c = "cyan")
+plt.plot(range(1,11), qda_train_scores, label="QDA train error", c = "yellow")
+plt.plot(range(1,11), qda_test_scores, label="QDA test error", c = "green")
+plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train error", c = "red")
+plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test error", c = "magenta")
 plt.xlabel("Dimension (reduced from LDA)")
 plt.ylabel("Error")
-plt.legend(loc='right', fancybox=True)
+plt.legend(loc='upper right', fancybox=True)
 plt.show()
