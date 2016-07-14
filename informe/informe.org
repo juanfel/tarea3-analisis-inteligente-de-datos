@@ -90,9 +90,7 @@
      [[file:p1_Dim_Error_LDA.png]] 
 
      
-* Reconocimiento de Texto
- El problema de ésta parte es reconocer si un comentario de un sitio web de
- películas es favorable o desfavorable.
+* Análisis de Opiniones sobre Películas.
 ** Preprocesamiento de los datos. 
    1. Tanto el set de entrenamiento como el de pruebas tienen *3554* datos.
        Los datos se separan en textos positivos y negativos de acuerdo a la tabla:
