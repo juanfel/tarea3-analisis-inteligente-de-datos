@@ -6,7 +6,7 @@ Created on Sat Jul 09 12:30:55 2016
 """
 
 
-# Partie 1
+# Parte 1
 
 # A)
 
@@ -153,7 +153,7 @@ plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train score", c
 plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test score", c = "magenta")
 plt.xlabel("Dimension (reduced from PCA)")
 plt.ylabel("Error")
-plt.legend(loc='upper right', fancybox=True)
+plt.legend(loc='right', fancybox=True)
 plt.show()
 
 
@@ -173,18 +173,18 @@ for k in range(1,11):
     #LDA
     lda_model = LDA()
     lda_model.fit(Xred_lda,y)
-    lda_train_scores += [lda_model.score(Xred_lda,y)]
-    lda_test_scores += [lda_model.score(Xred_lda_test,ytest)]
+    lda_train_scores += [1-lda_model.score(Xred_lda,y)]
+    lda_test_scores += [1-lda_model.score(Xred_lda_test,ytest)]
     #QDA
     qda_model = QDA()
     qda_model.fit(Xred_lda,y)
-    qda_train_scores += [qda_model.score(Xred_lda,y)]
-    qda_test_scores += [qda_model.score(Xred_lda_test,ytest)]
+    qda_train_scores += [1-qda_model.score(Xred_lda,y)]
+    qda_test_scores += [1-qda_model.score(Xred_lda_test,ytest)]
     #KNN
     knn_model = KNeighborsClassifier(n_neighbors=8)
     knn_model.fit(Xred_lda,y)
-    knn_train_scores += [knn_model.score(Xred_lda,y)]
-    knn_test_scores += [knn_model.score(Xred_lda_test,ytest)]
+    knn_train_scores += [1-knn_model.score(Xred_lda,y)]
+    knn_test_scores += [1-knn_model.score(Xred_lda_test,ytest)]
 
 plt.figure(figsize=(12, 8))
 plt.plot(range(1,11), lda_train_scores, label="LDA train score", c = "blue")
@@ -194,6 +194,6 @@ plt.plot(range(1,11), qda_test_scores, label="QDA test score", c = "green")
 plt.plot(range(1,11), knn_train_scores, label="8-neighbors clas. train score", c = "red")
 plt.plot(range(1,11), knn_test_scores, label="8-neighbors clas. test score", c = "magenta")
 plt.xlabel("Dimension (reduced from LDA)")
-plt.ylabel("Score")
-plt.legend(loc='upper right', fancybox=True)
+plt.ylabel("Error")
+plt.legend(loc='right', fancybox=True)
 plt.show()
